@@ -1,0 +1,85 @@
+.answer-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 18px;
+
+    background:#f8fafc;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:12px;
+
+    transition:.2s;
+
+}
+
+.answer-item:hover{
+
+    border-color:#2563eb;
+
+    background:white;
+
+}
+
+.answer-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.answer-icon{
+
+    width:34px;
+
+    height:34px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:bold;
+
+    flex-shrink:0;
+
+}
+
+.answer-delete{
+
+    border:none;
+
+    background:#ef4444;
+
+    color:white;
+
+    padding:8px 14px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.answer-delete:hover{
+
+    background:#dc2626;
+
+}

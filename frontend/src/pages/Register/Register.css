@@ -1,0 +1,35 @@
+.auth-card select{
+
+    height:52px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:12px;
+
+    padding:0 16px;
+
+    font-size:15px;
+
+    outline:none;
+
+    background:white;
+
+}
+
+
+.auth-card select:focus{
+
+    border-color:#2563eb;
+
+}
+
+
+.auth-success{
+
+    margin-top:20px;
+
+    color:#16a34a;
+
+    text-align:center;
+
+}

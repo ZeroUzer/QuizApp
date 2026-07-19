@@ -1,0 +1,140 @@
+.home{
+    background:#f4f7fb;
+    min-height:100vh;
+}
+
+.hero{
+    padding:90px 0;
+    background:
+    linear-gradient(135deg,#2563eb,#1d4ed8);
+    color:white;
+}
+
+.hero h1{
+    font-size:58px;
+    margin-bottom:18px;
+    font-weight:700;
+}
+
+.hero p{
+    font-size:20px;
+    opacity:.9;
+    margin-bottom:35px;
+    max-width:700px;
+}
+
+.search{
+    width:100%;
+    max-width:700px;
+    height:58px;
+    border:none;
+    border-radius:16px;
+    padding:0 20px;
+    font-size:17px;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+
+.categories{
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+    padding:40px 0;
+}
+
+.category{
+    border:none;
+    padding:12px 22px;
+    border-radius:50px;
+    background:white;
+    cursor:pointer;
+    transition:.2s;
+    font-weight:600;
+}
+
+.category:hover{
+    transform:translateY(-2px);
+}
+
+.category.active{
+    background:#2563eb;
+    color:white;
+}
+
+.quiz-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:30px;
+    padding-bottom:70px;
+}
+
+.quiz-card{
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    transition:.25s;
+    box-shadow:0 10px 35px rgba(0,0,0,.08);
+}
+
+.quiz-card:hover{
+    transform:translateY(-10px);
+}
+
+.quiz-card img{
+    width:100%;
+    height:230px;
+    object-fit:cover;
+}
+
+.quiz-body{
+    padding:22px;
+}
+
+.badge{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:30px;
+    background:#dbeafe;
+    color:#2563eb;
+    margin-bottom:16px;
+    font-weight:600;
+}
+
+.quiz-body h2{
+    margin-bottom:12px;
+    font-size:24px;
+}
+
+.quiz-body p{
+    color:#666;
+    line-height:1.6;
+    margin-bottom:20px;
+}
+
+.quiz-info{
+    color:#777;
+    margin-bottom:20px;
+}
+
+.play-button{
+    display:block;
+    text-align:center;
+    padding:14px;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-weight:600;
+    transition:.2s;
+}
+
+.play-button:hover{
+    background:#1d4ed8;
+}
+
+.empty{
+    grid-column:1/-1;
+    background:white;
+    padding:80px;
+    text-align:center;
+    border-radius:20px;
+    font-size:24px;
+}
