@@ -1,0 +1,37 @@
+{
+    "title": "История России",
+    "description": "Проверь свои знания по истории России",
+    "category": "История",
+    "questions": [
+        {
+            "text": "В каком году произошла Куликовская битва?",
+            "allow_multiple_answers": false,
+            "options": [
+                { "text": "1380", "is_correct": true },
+                { "text": "1480", "is_correct": false },
+                { "text": "1240", "is_correct": false },
+                { "text": "1700", "is_correct": false }
+            ]
+        },
+        {
+            "text": "Какие из этих городов были столицами России?",
+            "allow_multiple_answers": true,
+            "options": [
+                { "text": "Санкт-Петербург", "is_correct": true },
+                { "text": "Москва", "is_correct": true },
+                { "text": "Киев", "is_correct": false },
+                { "text": "Владимир", "is_correct": false }
+            ]
+        },
+        {
+            "text": "Кто был первым президентом России?",
+            "allow_multiple_answers": false,
+            "options": [
+                { "text": "Борис Ельцин", "is_correct": true },
+                { "text": "Владимир Путин", "is_correct": false },
+                { "text": "Михаил Горбачёв", "is_correct": false },
+                { "text": "Дмитрий Медведев", "is_correct": false }
+            ]
+        }
+    ]
+}

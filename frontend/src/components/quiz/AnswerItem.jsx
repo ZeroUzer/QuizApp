@@ -1,65 +1,27 @@
 import "./AnswerItem.css";
 
-function AnswerItem({
-
-    answer,
-
-    onDelete,
-
-}) {
-
+function AnswerItem({ answer, onDelete, onToggleCorrect }) {
     return (
-
-        <div className="answer-item">
-
+        <div className={`answer-item ${answer.is_correct ? "correct" : ""}`}>
             <div className="answer-left">
-
-                <div className="answer-icon">
-
-                    {
-
-                        answer.is_correct
-
-                        ? "✓"
-
-                        : "•"
-
-                    }
-
-                </div>
-
-                <span>
-
-                    {answer.text}
-
-                </span>
-
+                <button
+                    className={`answer-check ${answer.is_correct ? "checked" : ""}`}
+                    onClick={() => onToggleCorrect(answer.id)}
+                    title={answer.is_correct ? "Сделать неправильным" : "Сделать правильным"}
+                >
+                    {answer.is_correct ? "✓" : "○"}
+                </button>
+                <span className="answer-text">{answer.text}</span>
             </div>
-
             <button
-
-                className="answer-delete"
-
-                onClick={() =>
-
-                    onDelete(
-
-                        answer.id
-
-                    )
-
-                }
-
+                className="answer-delete-btn"
+                onClick={() => onDelete(answer.id)}
+                title="Удалить ответ"
             >
-
-                Удалить
-
+                ✕
             </button>
-
         </div>
-
     );
-
 }
 
 export default AnswerItem;

@@ -1,0 +1,1869 @@
+
+Z:\QuizApp>(
+echo. 
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\manage.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\manage.py" 
+) 
+
+============================================================
+FILE: Z:\QuizApp\backend\manage.py
+============================================================
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
+import os
+import sys
+
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+
+if __name__ == '__main__':
+    main()
+
+Z:\QuizApp>(
+echo. 
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\auth_check.txt  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\auth_check.txt" 
+) 
+
+============================================================
+FILE: Z:\QuizApp\backend\auth_check.txt
+============================================================
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+
+    path("api/users/", include("users.urls")),
+    path("api/", include("quizzes.urls")),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )from django.contrib.auth import get_user_model
+from rest_framework import generics, permissions
+
+from .serializers import RegisterSerializer, UserSerializer
+
+User = get_user_model()
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.userfrom django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+User = get_user_model()
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True,
+        min_length=6,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "password",
+            "role",
+        )
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+            role=validated_data.get(
+                "role",
+                User.Role.PARTICIPANT,
+            ),
+        )
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "role",
+            "created_at",
+        )from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+from .views import RegisterView, ProfileView
+
+urlpatterns = [
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("refresh/", TokenRefreshView.as_view(), name="refresh"),
+    path("profile/", ProfileView.as_view(), name="profile"),
+]
+Z:\QuizApp>(
+echo. 
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\requirements.txt  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\requirements.txt" 
+) 
+
+============================================================
+FILE: Z:\QuizApp\backend\requirements.txt
+============================================================
+asgiref==3.12.1
+channels==4.3.2
+Django==5.2.16
+django-cors-headers==4.9.0
+djangorestframework==3.17.1
+djangorestframework_simplejwt==5.5.1
+pillow==12.3.0
+PyJWT==2.13.0
+sqlparse==0.5.5
+tzdata==2026.3
+
+Z:\QuizApp>(
+echo..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\config\asgi.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\config\asgi.py" 
+) 
+.
+============================================================
+FILE: Z:\QuizApp\backend\config\asgi.py
+============================================================
+"""
+ASGI config for config project.
+
+It exposes the ASGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
+"""
+
+import os
+
+from django.core.asgi import get_asgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+application = get_asgi_application()
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\config\settings.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\config\settings.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\config\settings.py
+============================================================
+from pathlib import Path
+from datetime import timedelta
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = "django-insecure-quiz-project"
+
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+
+    "rest_framework",
+    "corsheaders",
+    "channels",
+
+    "users",
+    "quizzes",
+    "rooms",
+]
+
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+
+ROOT_URLCONF = "config.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+
+AUTH_PASSWORD_VALIDATORS = []
+
+
+LANGUAGE_CODE = "ru"
+
+TIME_ZONE = "Europe/Moscow"
+
+USE_I18N = True
+
+USE_TZ = True
+
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "users.User"
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
+
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=12),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\config\urls.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\config\urls.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\config\urls.py
+============================================================
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+
+    path("api/users/", include("users.urls")),
+    path("api/", include("quizzes.urls")),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT,
+    )
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\config\wsgi.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\config\wsgi.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\config\wsgi.py
+============================================================
+"""
+WSGI config for config project.
+
+It exposes the WSGI callable as a module-level variable named ``application``.
+
+For more information on this file, see
+https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
+"""
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
+application = get_wsgi_application()
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\config\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\config\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\config\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\admin.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\admin.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\admin.py
+============================================================
+from django.contrib import admin
+
+# Register your models here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\apps.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\apps.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\apps.py
+============================================================
+from django.apps import AppConfig
+
+
+class QuizzesConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'quizzes'
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\models.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\models.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\models.py
+============================================================
+from django.db import models
+from django.conf import settings
+
+
+class Quiz(models.Model):
+
+    class Difficulty(models.TextChoices):
+        EASY = "easy", "Лёгкий"
+        MEDIUM = "medium", "Средний"
+        HARD = "hard", "Сложный"
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="quizzes"
+    )
+
+    title = models.CharField(
+        max_length=255
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    image = models.ImageField(
+        upload_to="quiz_images/",
+        blank=True,
+        null=True
+    )
+
+    category = models.CharField(
+        max_length=100,
+        default="Другое"
+    )
+
+    difficulty = models.CharField(
+        max_length=20,
+        choices=Difficulty.choices,
+        default=Difficulty.MEDIUM
+    )
+
+    estimated_time = models.PositiveIntegerField(
+        default=10,
+        help_text="Примерное время прохождения (минуты)"
+    )
+
+    is_public = models.BooleanField(
+        default=True
+    )
+
+    shuffle_questions = models.BooleanField(
+        default=False
+    )
+
+    shuffle_answers = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.title
+
+
+class Question(models.Model):
+
+    quiz = models.ForeignKey(
+        Quiz,
+        related_name="questions",
+        on_delete=models.CASCADE
+    )
+
+    text = models.TextField()
+
+    image = models.ImageField(
+        upload_to="question_images/",
+        blank=True,
+        null=True
+    )
+
+    allow_multiple_answers = models.BooleanField(
+        default=False
+    )
+
+    time_limit = models.IntegerField(
+        default=30
+    )
+
+    order = models.IntegerField(
+        default=0
+    )
+
+    def __str__(self):
+        return self.text
+
+
+class AnswerOption(models.Model):
+
+    question = models.ForeignKey(
+        Question,
+        related_name="options",
+        on_delete=models.CASCADE
+    )
+
+    text = models.CharField(
+        max_length=255
+    )
+
+    is_correct = models.BooleanField(
+        default=False
+    )
+
+    def __str__(self):
+        return self.text
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\serializers.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\serializers.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\serializers.py
+============================================================
+from rest_framework import serializers
+
+from .models import Quiz, Question, AnswerOption
+
+
+class AnswerOptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AnswerOption
+        fields = [
+            "id",
+            "question",
+            "text",
+            "is_correct",
+        ]
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+
+    options = AnswerOptionSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    class Meta:
+        model = Question
+        fields = [
+            "id",
+            "quiz",
+            "text",
+            "image",
+            "allow_multiple_answers",
+            "time_limit",
+            "order",
+            "options",
+        ]
+
+
+class QuizSerializer(serializers.ModelSerializer):
+
+    questions = QuestionSerializer(
+        many=True,
+        read_only=True,
+    )
+
+    questions_count = serializers.SerializerMethodField()
+
+    owner_username = serializers.CharField(
+        source="owner.username",
+        read_only=True,
+    )
+
+    class Meta:
+        model = Quiz
+        fields = [
+            "id",
+            "owner",
+            "owner_username",
+            "title",
+            "description",
+            "image",
+            "category",
+            "is_public",
+            "shuffle_questions",
+            "shuffle_answers",
+            "created_at",
+            "updated_at",
+            "questions_count",
+            "questions",
+        ]
+
+    def get_questions_count(self, obj):
+        return obj.questions.count()
+
+
+class QuizCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Quiz
+        fields = [
+            "title",
+            "description",
+            "image",
+            "category",
+            "is_public",
+            "shuffle_questions",
+            "shuffle_answers",
+        ]
+
+    def create(self, validated_data):
+        return Quiz.objects.create(
+            owner=self.context["request"].user,
+            **validated_data,
+        )
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\tests.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\tests.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\tests.py
+============================================================
+from django.test import TestCase
+
+# Create your tests here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\urls.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\urls.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\urls.py
+============================================================
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    AnswerOptionViewSet,
+    QuestionViewSet,
+    QuizViewSet,
+)
+
+router = DefaultRouter()
+router.register("quizzes", QuizViewSet, basename="quiz")
+router.register("questions", QuestionViewSet, basename="question")
+router.register("answers", AnswerOptionViewSet, basename="answer")
+
+urlpatterns = [
+    path("", include(router.urls)),
+]
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\views.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\views.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\views.py
+============================================================
+from rest_framework import permissions, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+from .models import Quiz, Question, AnswerOption
+
+from .serializers import (
+    QuizSerializer,
+    QuizCreateSerializer,
+    QuestionSerializer,
+    AnswerOptionSerializer,
+)
+
+
+class QuizViewSet(viewsets.ModelViewSet):
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    queryset = Quiz.objects.all().prefetch_related(
+        "questions__options"
+    )
+
+
+    def get_serializer_class(self):
+
+        if self.action in ["create", "update", "partial_update"]:
+
+            return QuizCreateSerializer
+
+        return QuizSerializer
+
+
+    def get_queryset(self):
+
+        if self.action == "my":
+
+            return Quiz.objects.filter(
+                owner=self.request.user
+            ).prefetch_related(
+                "questions__options"
+            )
+
+
+        return Quiz.objects.filter(
+            is_public=True
+        ).prefetch_related(
+            "questions__options"
+        )
+
+
+    def perform_create(self, serializer):
+
+        serializer.save(
+            owner=self.request.user
+        )
+
+
+    @action(
+        detail=False,
+        methods=["get"],
+    )
+    def my(self, request):
+
+        serializer = QuizSerializer(
+            self.get_queryset(),
+            many=True,
+        )
+
+        return Response(serializer.data)
+
+
+class QuestionViewSet(viewsets.ModelViewSet):
+
+    serializer_class = QuestionSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+
+    def get_queryset(self):
+
+        return Question.objects.filter(
+            quiz__owner=self.request.user
+        ).prefetch_related(
+            "options"
+        )
+
+
+class AnswerOptionViewSet(viewsets.ModelViewSet):
+
+    serializer_class = AnswerOptionSerializer
+
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+
+
+    def get_queryset(self):
+
+        return AnswerOption.objects.filter(
+            question__quiz__owner=self.request.user
+        )
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\0001_initial.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\0001_initial.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\0001_initial.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 10:58
+
+import django.db.models.deletion
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='Question',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('text', models.TextField(verbose_name='Текст вопроса')),
+                ('image', models.ImageField(blank=True, null=True, upload_to='questions/', verbose_name='Изображение')),
+                ('allow_multiple_answers', models.BooleanField(default=False, verbose_name='Несколько правильных ответов')),
+                ('time_limit', models.PositiveIntegerField(default=30, verbose_name='Время на ответ (сек.)')),
+                ('order', models.PositiveIntegerField(default=1, verbose_name='Порядок')),
+            ],
+            options={
+                'verbose_name': 'Вопрос',
+                'verbose_name_plural': 'Вопросы',
+                'ordering': ['order'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Quiz',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('title', models.CharField(max_length=255, verbose_name='Название')),
+                ('description', models.TextField(blank=True, verbose_name='Описание')),
+                ('is_public', models.BooleanField(default=False, verbose_name='Публичный квиз')),
+                ('shuffle_questions', models.BooleanField(default=False, verbose_name='Перемешивать вопросы')),
+                ('shuffle_answers', models.BooleanField(default=False, verbose_name='Перемешивать ответы')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Создан')),
+                ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Изменён')),
+            ],
+            options={
+                'verbose_name': 'Квиз',
+                'verbose_name_plural': 'Квизы',
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='AnswerOption',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('text', models.CharField(max_length=255, verbose_name='Вариант ответа')),
+                ('is_correct', models.BooleanField(default=False, verbose_name='Правильный ответ')),
+                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='options', to='quizzes.question', verbose_name='Вопрос')),
+            ],
+            options={
+                'verbose_name': 'Вариант ответа',
+                'verbose_name_plural': 'Варианты ответов',
+            },
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\0002_initial.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\0002_initial.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\0002_initial.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 10:58
+
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ('quizzes', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='quiz',
+            name='owner',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quizzes', to=settings.AUTH_USER_MODEL, verbose_name='Автор'),
+        ),
+        migrations.AddField(
+            model_name='question',
+            name='quiz',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='quizzes.quiz', verbose_name='Квиз'),
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\0003_alter_answeroption_options_alter_question_options_and_more.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\0003_alter_answeroption_options_alter_question_options_and_more.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\0003_alter_answeroption_options_alter_question_options_and_more.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 14:55
+
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('quizzes', '0002_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.AlterModelOptions(
+            name='answeroption',
+            options={},
+        ),
+        migrations.AlterModelOptions(
+            name='question',
+            options={},
+        ),
+        migrations.AlterModelOptions(
+            name='quiz',
+            options={},
+        ),
+        migrations.AddField(
+            model_name='quiz',
+            name='category',
+            field=models.CharField(blank=True, max_length=100),
+        ),
+        migrations.AddField(
+            model_name='quiz',
+            name='image',
+            field=models.ImageField(blank=True, null=True, upload_to='quiz_images/'),
+        ),
+        migrations.AddField(
+            model_name='quiz',
+            name='is_published',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='answeroption',
+            name='is_correct',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='answeroption',
+            name='question',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='options', to='quizzes.question'),
+        ),
+        migrations.AlterField(
+            model_name='answeroption',
+            name='text',
+            field=models.CharField(max_length=255),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='allow_multiple_answers',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='image',
+            field=models.ImageField(blank=True, null=True, upload_to='question_images/'),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='order',
+            field=models.PositiveIntegerField(default=0),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='quiz',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='questions', to='quizzes.quiz'),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='text',
+            field=models.TextField(),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='time_limit',
+            field=models.PositiveIntegerField(default=30),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='created_at',
+            field=models.DateTimeField(auto_now_add=True),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='description',
+            field=models.TextField(blank=True),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='is_public',
+            field=models.BooleanField(default=True),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='owner',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='quizzes', to=settings.AUTH_USER_MODEL),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='shuffle_answers',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='shuffle_questions',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='title',
+            field=models.CharField(max_length=255),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='updated_at',
+            field=models.DateTimeField(auto_now=True),
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\0004_remove_quiz_is_published_alter_question_order_and_more.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\0004_remove_quiz_is_published_alter_question_order_and_more.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\0004_remove_quiz_is_published_alter_question_order_and_more.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 15:01
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('quizzes', '0003_alter_answeroption_options_alter_question_options_and_more'),
+    ]
+
+    operations = [
+        migrations.RemoveField(
+            model_name='quiz',
+            name='is_published',
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='order',
+            field=models.IntegerField(default=0),
+        ),
+        migrations.AlterField(
+            model_name='question',
+            name='time_limit',
+            field=models.IntegerField(default=30),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='category',
+            field=models.CharField(default='Другое', max_length=100),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='is_public',
+            field=models.BooleanField(default=False),
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\0005_quiz_difficulty_quiz_estimated_time_and_more.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\0005_quiz_difficulty_quiz_estimated_time_and_more.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\0005_quiz_difficulty_quiz_estimated_time_and_more.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 15:09
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('quizzes', '0004_remove_quiz_is_published_alter_question_order_and_more'),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='quiz',
+            name='difficulty',
+            field=models.CharField(choices=[('easy', 'Лёгкий'), ('medium', 'Средний'), ('hard', 'Сложный')], default='medium', max_length=20),
+        ),
+        migrations.AddField(
+            model_name='quiz',
+            name='estimated_time',
+            field=models.PositiveIntegerField(default=10, help_text='Примерное время прохождения (минуты)'),
+        ),
+        migrations.AlterField(
+            model_name='quiz',
+            name='is_public',
+            field=models.BooleanField(default=True),
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\quizzes\migrations\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\quizzes\migrations\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\quizzes\migrations\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\admin.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\admin.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\admin.py
+============================================================
+from django.contrib import admin
+
+# Register your models here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\apps.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\apps.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\apps.py
+============================================================
+from django.apps import AppConfig
+
+
+class RoomsConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'rooms'
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\models.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\models.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\models.py
+============================================================
+from django.conf import settings
+from django.db import models
+
+from quizzes.models import AnswerOption, Question, Quiz
+
+
+class GameSession(models.Model):
+    class Status(models.TextChoices):
+        WAITING = "waiting", "Ожидание"
+        ACTIVE = "active", "Игра"
+        FINISHED = "finished", "Завершена"
+
+    quiz = models.ForeignKey(
+        Quiz,
+        on_delete=models.CASCADE,
+        related_name="sessions",
+        verbose_name="Квиз",
+    )
+
+    organizer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="organized_sessions",
+        verbose_name="Организатор",
+    )
+
+    room_code = models.CharField(
+        max_length=8,
+        unique=True,
+        verbose_name="Код комнаты",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.WAITING,
+        verbose_name="Статус",
+    )
+
+    started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Начало игры",
+    )
+
+    finished_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Окончание игры",
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Создано",
+    )
+
+    class Meta:
+        verbose_name = "Игровая сессия"
+        verbose_name_plural = "Игровые сессии"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.room_code} ({self.quiz.title})"
+
+
+class Participant(models.Model):
+    session = models.ForeignKey(
+        GameSession,
+        on_delete=models.CASCADE,
+        related_name="participants",
+        verbose_name="Игровая сессия",
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="participations",
+        verbose_name="Пользователь",
+    )
+
+    score = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Очки",
+    )
+
+    joined_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Время подключения",
+    )
+
+    class Meta:
+        verbose_name = "Участник"
+        verbose_name_plural = "Участники"
+        unique_together = ("session", "user")
+
+    def __str__(self):
+        return f"{self.user.username} ({self.session.room_code})"
+
+
+class UserAnswer(models.Model):
+    participant = models.ForeignKey(
+        Participant,
+        on_delete=models.CASCADE,
+        related_name="answers",
+        verbose_name="Участник",
+    )
+
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name="user_answers",
+        verbose_name="Вопрос",
+    )
+
+    selected_options = models.ManyToManyField(
+        AnswerOption,
+        related_name="selected_in_answers",
+        verbose_name="Выбранные ответы",
+    )
+
+    is_correct = models.BooleanField(
+        default=False,
+        verbose_name="Ответ верный",
+    )
+
+    points = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Полученные очки",
+    )
+
+    answered_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Время ответа",
+    )
+
+    class Meta:
+        verbose_name = "Ответ пользователя"
+        verbose_name_plural = "Ответы пользователей"
+
+    def __str__(self):
+        return f"{self.participant.user.username} - {self.question.id}"
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\tests.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\tests.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\tests.py
+============================================================
+from django.test import TestCase
+
+# Create your tests here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\views.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\views.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\views.py
+============================================================
+from django.shortcuts import render
+
+# Create your views here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\migrations\0001_initial.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\migrations\0001_initial.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\migrations\0001_initial.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 10:58
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='GameSession',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('room_code', models.CharField(max_length=8, unique=True, verbose_name='Код комнаты')),
+                ('status', models.CharField(choices=[('waiting', 'Ожидание'), ('active', 'Игра'), ('finished', 'Завершена')], default='waiting', max_length=20, verbose_name='Статус')),
+                ('started_at', models.DateTimeField(blank=True, null=True, verbose_name='Начало игры')),
+                ('finished_at', models.DateTimeField(blank=True, null=True, verbose_name='Окончание игры')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Создано')),
+            ],
+            options={
+                'verbose_name': 'Игровая сессия',
+                'verbose_name_plural': 'Игровые сессии',
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Participant',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('score', models.PositiveIntegerField(default=0, verbose_name='Очки')),
+                ('joined_at', models.DateTimeField(auto_now_add=True, verbose_name='Время подключения')),
+            ],
+            options={
+                'verbose_name': 'Участник',
+                'verbose_name_plural': 'Участники',
+            },
+        ),
+        migrations.CreateModel(
+            name='UserAnswer',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('is_correct', models.BooleanField(default=False, verbose_name='Ответ верный')),
+                ('points', models.PositiveIntegerField(default=0, verbose_name='Полученные очки')),
+                ('answered_at', models.DateTimeField(auto_now_add=True, verbose_name='Время ответа')),
+            ],
+            options={
+                'verbose_name': 'Ответ пользователя',
+                'verbose_name_plural': 'Ответы пользователей',
+            },
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\migrations\0002_initial.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\migrations\0002_initial.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\migrations\0002_initial.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 10:58
+
+import django.db.models.deletion
+from django.conf import settings
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ('quizzes', '0002_initial'),
+        ('rooms', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.AddField(
+            model_name='gamesession',
+            name='organizer',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='organized_sessions', to=settings.AUTH_USER_MODEL, verbose_name='Организатор'),
+        ),
+        migrations.AddField(
+            model_name='gamesession',
+            name='quiz',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to='quizzes.quiz', verbose_name='Квиз'),
+        ),
+        migrations.AddField(
+            model_name='participant',
+            name='session',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='participants', to='rooms.gamesession', verbose_name='Игровая сессия'),
+        ),
+        migrations.AddField(
+            model_name='participant',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='participations', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь'),
+        ),
+        migrations.AddField(
+            model_name='useranswer',
+            name='participant',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answers', to='rooms.participant', verbose_name='Участник'),
+        ),
+        migrations.AddField(
+            model_name='useranswer',
+            name='question',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_answers', to='quizzes.question', verbose_name='Вопрос'),
+        ),
+        migrations.AddField(
+            model_name='useranswer',
+            name='selected_options',
+            field=models.ManyToManyField(related_name='selected_in_answers', to='quizzes.answeroption', verbose_name='Выбранные ответы'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='participant',
+            unique_together={('session', 'user')},
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\rooms\migrations\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\rooms\migrations\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\rooms\migrations\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\admin.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\admin.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\admin.py
+============================================================
+from django.contrib import admin
+
+# Register your models here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\apps.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\apps.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\apps.py
+============================================================
+from django.apps import AppConfig
+
+
+class UsersConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'users'
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\models.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\models.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\models.py
+============================================================
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+
+class User(AbstractUser):
+
+    class Role(models.TextChoices):
+
+        ORGANIZER = (
+            "organizer",
+            "Организатор"
+        )
+
+        PARTICIPANT = (
+            "participant",
+            "Участник"
+        )
+
+
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.PARTICIPANT
+    )
+
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+
+    def __str__(self):
+        return self.username
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\serializers.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\serializers.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\serializers.py
+============================================================
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
+User = get_user_model()
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True,
+        min_length=6,
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "password",
+            "role",
+        )
+
+    def create(self, validated_data):
+        return User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+            role=validated_data.get(
+                "role",
+                User.Role.PARTICIPANT,
+            ),
+        )
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "email",
+            "role",
+            "created_at",
+        )
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\tests.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\tests.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\tests.py
+============================================================
+from django.test import TestCase
+
+# Create your tests here.
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\urls.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\urls.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\urls.py
+============================================================
+from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+from .views import RegisterView, ProfileView
+
+urlpatterns = [
+    path("register/", RegisterView.as_view(), name="register"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("refresh/", TokenRefreshView.as_view(), name="refresh"),
+    path("profile/", ProfileView.as_view(), name="profile"),
+]
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\views.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\views.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\views.py
+============================================================
+from django.contrib.auth import get_user_model
+from rest_framework import generics, permissions
+
+from .serializers import RegisterSerializer, UserSerializer
+
+User = get_user_model()
+
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\__init__.py
+============================================================
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\migrations\0001_initial.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\migrations\0001_initial.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\migrations\0001_initial.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 10:58
+
+import django.contrib.auth.models
+import django.contrib.auth.validators
+import django.utils.timezone
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        ('auth', '0012_alter_user_first_name_max_length'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='User',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('password', models.CharField(max_length=128, verbose_name='password')),
+                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
+                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
+                ('username', models.CharField(error_messages={'unique': 'A user with that username already exists.'}, help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='username')),
+                ('first_name', models.CharField(blank=True, max_length=150, verbose_name='first name')),
+                ('last_name', models.CharField(blank=True, max_length=150, verbose_name='last name')),
+                ('email', models.EmailField(blank=True, max_length=254, verbose_name='email address')),
+                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
+                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                ('role', models.CharField(choices=[('participant', 'Участник'), ('organizer', 'Организатор')], default='participant', max_length=20, verbose_name='Роль')),
+                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')),
+                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='groups')),
+                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='user permissions')),
+            ],
+            options={
+                'verbose_name': 'Пользователь',
+                'verbose_name_plural': 'Пользователи',
+                'ordering': ['username'],
+            },
+            managers=[
+                ('objects', django.contrib.auth.models.UserManager()),
+            ],
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\migrations\0002_alter_user_options_alter_user_created_at_and_more.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\migrations\0002_alter_user_options_alter_user_created_at_and_more.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\migrations\0002_alter_user_options_alter_user_created_at_and_more.py
+============================================================
+# Generated by Django 5.2.16 on 2026-07-19 14:55
+
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('users', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AlterModelOptions(
+            name='user',
+            options={'verbose_name': 'user', 'verbose_name_plural': 'users'},
+        ),
+        migrations.AlterField(
+            model_name='user',
+            name='created_at',
+            field=models.DateTimeField(auto_now_add=True),
+        ),
+        migrations.AlterField(
+            model_name='user',
+            name='role',
+            field=models.CharField(choices=[('organizer', 'Организатор'), ('participant', 'Участник')], default='participant', max_length=20),
+        ),
+    ]
+
+Z:\QuizApp>(
+echo.echo ..  
+ echo ============================================================  
+ echo FILE: Z:\QuizApp\backend\users\migrations\__init__.py  
+ echo ============================================================  
+ type "Z:\QuizApp\backend\users\migrations\__init__.py" 
+) 
+echo ..
+============================================================
+FILE: Z:\QuizApp\backend\users\migrations\__init__.py
+============================================================

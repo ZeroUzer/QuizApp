@@ -1,10 +1,8 @@
 from rest_framework import serializers
-
 from .models import Quiz, Question, AnswerOption
 
 
 class AnswerOptionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AnswerOption
         fields = [
@@ -16,7 +14,6 @@ class AnswerOptionSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-
     options = AnswerOptionSerializer(
         many=True,
         read_only=True,
@@ -37,14 +34,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuizSerializer(serializers.ModelSerializer):
-
     questions = QuestionSerializer(
         many=True,
         read_only=True,
     )
-
     questions_count = serializers.SerializerMethodField()
-
     owner_username = serializers.CharField(
         source="owner.username",
         read_only=True,
@@ -60,6 +54,8 @@ class QuizSerializer(serializers.ModelSerializer):
             "description",
             "image",
             "category",
+            "difficulty",
+            "estimated_time",
             "is_public",
             "shuffle_questions",
             "shuffle_answers",
@@ -74,7 +70,6 @@ class QuizSerializer(serializers.ModelSerializer):
 
 
 class QuizCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Quiz
         fields = [
@@ -82,13 +77,17 @@ class QuizCreateSerializer(serializers.ModelSerializer):
             "description",
             "image",
             "category",
+            "difficulty",
+            "estimated_time",
             "is_public",
             "shuffle_questions",
             "shuffle_answers",
         ]
 
     def create(self, validated_data):
+        # Получаем owner из контекста
+        owner = self.context.get("owner")
         return Quiz.objects.create(
-            owner=self.context["request"].user,
-            **validated_data,
+            owner=owner,
+            **validated_data
         )

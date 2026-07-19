@@ -1,0 +1,111 @@
+ë‚‡„™‚„‡† Ø†ØÆ™ ‚Æ¨† çÆ¢Î© ‚Æ¨
+ë•‡®©≠Î© ≠Æ¨•‡ ‚Æ¨†: B6DB-958C
+Z:\QUIZAPP\BACKEND
+≥   auth_check.txt
+≥   db.sqlite3
+≥   manage.py
+≥   requirements.txt
+≥   
+√ƒƒƒconfig
+≥   ≥   asgi.py
+≥   ≥   settings.py
+≥   ≥   urls.py
+≥   ≥   wsgi.py
+≥   ≥   __init__.py
+≥   ≥   
+≥   ¿ƒƒƒ__pycache__
+≥           settings.cpython-311.pyc
+≥           urls.cpython-311.pyc
+≥           wsgi.cpython-311.pyc
+≥           __init__.cpython-311.pyc
+≥           
+√ƒƒƒmedia
+√ƒƒƒquizzes
+≥   ≥   admin.py
+≥   ≥   apps.py
+≥   ≥   models.py
+≥   ≥   serializers.py
+≥   ≥   tests.py
+≥   ≥   urls.py
+≥   ≥   views.py
+≥   ≥   __init__.py
+≥   ≥   
+≥   √ƒƒƒmigrations
+≥   ≥   ≥   0001_initial.py
+≥   ≥   ≥   0002_initial.py
+≥   ≥   ≥   0003_alter_answeroption_options_alter_question_options_and_more.py
+≥   ≥   ≥   0004_remove_quiz_is_published_alter_question_order_and_more.py
+≥   ≥   ≥   0005_quiz_difficulty_quiz_estimated_time_and_more.py
+≥   ≥   ≥   __init__.py
+≥   ≥   ≥   
+≥   ≥   ¿ƒƒƒ__pycache__
+≥   ≥           0001_initial.cpython-311.pyc
+≥   ≥           0002_initial.cpython-311.pyc
+≥   ≥           0003_alter_answeroption_options_alter_question_options_and_more.cpython-311.pyc
+≥   ≥           0004_remove_quiz_is_published_alter_question_order_and_more.cpython-311.pyc
+≥   ≥           0005_quiz_difficulty_quiz_estimated_time_and_more.cpython-311.pyc
+≥   ≥           __init__.cpython-311.pyc
+≥   ≥           
+≥   ¿ƒƒƒ__pycache__
+≥           admin.cpython-311.pyc
+≥           apps.cpython-311.pyc
+≥           models.cpython-311.pyc
+≥           serializers.cpython-311.pyc
+≥           urls.cpython-311.pyc
+≥           views.cpython-311.pyc
+≥           __init__.cpython-311.pyc
+≥           
+√ƒƒƒrooms
+≥   ≥   admin.py
+≥   ≥   apps.py
+≥   ≥   models.py
+≥   ≥   tests.py
+≥   ≥   views.py
+≥   ≥   __init__.py
+≥   ≥   
+≥   √ƒƒƒmigrations
+≥   ≥   ≥   0001_initial.py
+≥   ≥   ≥   0002_initial.py
+≥   ≥   ≥   __init__.py
+≥   ≥   ≥   
+≥   ≥   ¿ƒƒƒ__pycache__
+≥   ≥           0001_initial.cpython-311.pyc
+≥   ≥           0002_initial.cpython-311.pyc
+≥   ≥           __init__.cpython-311.pyc
+≥   ≥           
+≥   ¿ƒƒƒ__pycache__
+≥           admin.cpython-311.pyc
+≥           apps.cpython-311.pyc
+≥           models.cpython-311.pyc
+≥           __init__.cpython-311.pyc
+≥           
+√ƒƒƒstatic
+¿ƒƒƒusers
+    ≥   admin.py
+    ≥   apps.py
+    ≥   models.py
+    ≥   serializers.py
+    ≥   tests.py
+    ≥   urls.py
+    ≥   views.py
+    ≥   __init__.py
+    ≥   
+    √ƒƒƒmigrations
+    ≥   ≥   0001_initial.py
+    ≥   ≥   0002_alter_user_options_alter_user_created_at_and_more.py
+    ≥   ≥   __init__.py
+    ≥   ≥   
+    ≥   ¿ƒƒƒ__pycache__
+    ≥           0001_initial.cpython-311.pyc
+    ≥           0002_alter_user_options_alter_user_created_at_and_more.cpython-311.pyc
+    ≥           __init__.cpython-311.pyc
+    ≥           
+    ¿ƒƒƒ__pycache__
+            admin.cpython-311.pyc
+            apps.cpython-311.pyc
+            models.cpython-311.pyc
+            serializers.cpython-311.pyc
+            urls.cpython-311.pyc
+            views.cpython-311.pyc
+            __init__.cpython-311.pyc
+            

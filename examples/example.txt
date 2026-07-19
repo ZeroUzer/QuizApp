@@ -1,0 +1,18 @@
+# Наука и технологии
+## Тест на знание IT-терминов
+
+1. Что такое API?
+- Application Programming Interface [x]
+- Advanced Programming Interface
+- Application Process Integration
+
+2. Какие языки являются языками программирования?
+- Python [x]
+- HTML
+- JavaScript [x]
+- CSS
+
+3. Что означает аббревиатура RAM?
+- Random Access Memory [x]
+- Read Access Memory
+- Run Application Module
