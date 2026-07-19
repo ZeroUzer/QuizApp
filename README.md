@@ -54,5 +54,3 @@ POST	/api/quizzes/	Создать квиз
 DELETE	/api/quizzes/{id}/	Удалить
 POST	/api/questions/	Добавить вопрос
 POST	/api/answers/	Добавить ответ
-Автор
-ZeroUzer
