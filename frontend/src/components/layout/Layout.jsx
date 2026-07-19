@@ -5,18 +5,13 @@ function Layout({ children }) {
     return (
         <>
             <Header />
-
-            <main
-                style={{
-                    minHeight: "80vh",
-                    padding: "30px",
-                    maxWidth: "1200px",
-                    margin: "0 auto",
-                }}
-            >
+            <main style={{
+                minHeight: "80vh",
+                background: "#0a0a1a",
+                color: "#fff",
+            }}>
                 {children}
             </main>
-
             <Footer />
         </>
     );

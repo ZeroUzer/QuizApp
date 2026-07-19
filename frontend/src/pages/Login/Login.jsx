@@ -8,68 +8,53 @@ function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setError("");
-        setIsLoading(true);
+        setLoading(true);
 
         try {
             await login({ username, password });
-            navigate("/dashboard");
+            navigate("/");
         } catch {
             setError("Неверный логин или пароль");
         } finally {
-            setIsLoading(false);
+            setLoading(false);
         }
     };
 
     return (
         <div className="auth-page">
-            <div className="auth-bg">
-                <div className="auth-bg-blob blob-1"></div>
-                <div className="auth-bg-blob blob-2"></div>
-                <div className="auth-bg-blob blob-3"></div>
-            </div>
             <div className="auth-card">
-                <div className="auth-card-icon">🔐</div>
-                <h1>Добро пожаловать</h1>
-                <p>Войдите в аккаунт, чтобы продолжить</p>
+                <h1>Вход</h1>
+                <p>Войдите в свой аккаунт</p>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Имя пользователя</label>
-                        <input
-                            type="text"
-                            placeholder="Введите логин"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Пароль</label>
-                        <input
-                            type="password"
-                            placeholder="Введите пароль"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" disabled={isLoading}>
-                        {isLoading ? "Вход..." : "Войти"}
+                    <input
+                        type="text"
+                        placeholder="Имя пользователя"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Пароль"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <button type="submit" disabled={loading}>
+                        {loading ? "Вход..." : "Войти"}
                     </button>
                 </form>
 
                 {error && <div className="auth-error">{error}</div>}
 
                 <div className="auth-bottom">
-                    <span>Нет аккаунта?</span>
-                    <Link to="/register">Зарегистрироваться</Link>
+                    Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
                 </div>
             </div>
         </div>

@@ -47,56 +47,53 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 28px 32px;
+    padding: 24px 28px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    margin-bottom: 40px;
-    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    margin-bottom: 32px;
 }
 
 .profile-info {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
 }
 
 .profile-avatar {
-    width: 72px;
-    height: 72px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: linear-gradient(135deg, #6C63FF, #8B5CF6);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     color: #fff;
     flex-shrink: 0;
 }
 
 .profile-details h1 {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 800;
     color: #fff;
     margin: 0;
-    letter-spacing: -0.5px;
 }
 
 .profile-email {
     color: rgba(255, 255, 255, 0.4);
-    font-size: 15px;
+    font-size: 14px;
     margin: 4px 0 8px;
 }
 
 .profile-role {
     display: inline-block;
-    padding: 4px 16px;
+    padding: 4px 14px;
     border-radius: 50px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .profile-role.organizer {
@@ -110,13 +107,13 @@
 }
 
 .logout-btn {
-    padding: 12px 28px;
+    padding: 10px 24px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(239, 68, 68, 0.1);
     color: #f87171;
     font-family: 'Inter', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -124,245 +121,116 @@
 
 .logout-btn:hover {
     background: rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* ===== DASHBOARD GRID ===== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 420px 1fr;
+    grid-template-columns: 380px 1fr;
     gap: 32px;
 }
 
 /* ===== CREATE CARD ===== */
 .create-card {
-    padding: 28px;
+    padding: 24px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    align-self: start;
+    border-radius: 16px;
 }
 
 .create-card h2 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 20px;
+    margin: 0 0 18px;
 }
 
 .create-card form {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
 }
 
 .create-card input,
 .create-card textarea {
-    padding: 14px 18px;
+    padding: 12px 16px;
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.04);
     color: #fff;
     font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    transition: all 0.3s ease;
+    font-size: 14px;
     outline: none;
+    transition: all 0.3s ease;
 }
 
 .create-card input::placeholder,
 .create-card textarea::placeholder {
-    color: rgba(255, 255, 255, 0.25);
+    color: rgba(255, 255, 255, 0.2);
 }
 
 .create-card input:focus,
 .create-card textarea:focus {
     border-color: #6C63FF;
     background: rgba(108, 99, 255, 0.05);
-    box-shadow: 0 0 30px rgba(108, 99, 255, 0.05);
 }
 
 .create-card textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 70px;
 }
 
-.create-card button[type="submit"] {
-    padding: 16px;
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-row label {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.create-card button {
+    padding: 14px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: linear-gradient(135deg, #6C63FF, #8B5CF6);
     color: #fff;
     font-family: 'Inter', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.create-card button[type="submit"]:hover:not(:disabled) {
+.create-card button:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3);
 }
 
-.create-card button[type="submit"]:disabled {
+.create-card button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-/* ===== IMPORT ===== */
-.import-divider {
-    display: flex;
-    align-items: center;
-    margin: 24px 0 16px;
-    color: rgba(255, 255, 255, 0.15);
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.import-divider::before,
-.import-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-}
-
-.import-divider::before {
-    margin-right: 16px;
-}
-
-.import-divider::after {
-    margin-left: 16px;
-}
-
-.import-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.file-upload-wrapper {
-    position: relative;
-}
-
-.file-input {
-    position: absolute;
-    opacity: 0;
-    width: 0.1px;
-    height: 0.1px;
-    z-index: -1;
-}
-
-.file-label {
-    display: block;
-    padding: 14px 18px;
-    border: 2px dashed rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.02);
-    color: rgba(255, 255, 255, 0.5);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.file-label:hover {
-    border-color: rgba(108, 99, 255, 0.3);
-    background: rgba(108, 99, 255, 0.04);
-    color: #a78bfa;
-}
-
-.file-label:has(.file-input:disabled) {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.file-label .file-name {
-    color: #a78bfa;
-    font-weight: 600;
-}
-
-.import-hint {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.2);
-    text-align: center;
-}
-
-.import-form button[type="submit"] {
-    padding: 14px;
-    border: none;
-    border-radius: 12px;
-    background: rgba(108, 99, 255, 0.15);
-    color: #a78bfa;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.import-form button[type="submit"]:hover:not(:disabled) {
-    background: rgba(108, 99, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-.import-form button[type="submit"]:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-    transform: none !important;
-}
-
-.import-status {
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 500;
-    text-align: center;
-    animation: fadeInUp 0.3s ease;
-}
-
-.import-status.error {
-    background: rgba(239, 68, 68, 0.1);
-    color: #f87171;
-    border: 1px solid rgba(239, 68, 68, 0.15);
-}
-
-.import-status.success {
-    background: rgba(52, 211, 153, 0.1);
-    color: #34d399;
-    border: 1px solid rgba(52, 211, 153, 0.15);
-}
-
-.import-status:not(.error):not(.success) {
-    background: rgba(108, 99, 255, 0.08);
-    color: #a78bfa;
-    border: 1px solid rgba(108, 99, 255, 0.1);
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== QUIZZES LIST ===== */
 .quizzes-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .list-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .list-header h2 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 700;
     color: #fff;
     margin: 0;
@@ -371,7 +239,6 @@
 .quiz-count {
     color: rgba(255, 255, 255, 0.3);
     font-size: 14px;
-    font-weight: 500;
 }
 
 /* ===== QUIZ ROW ===== */
@@ -379,35 +246,34 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
+    padding: 16px 20px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
+    border-radius: 12px;
     transition: all 0.3s ease;
 }
 
 .quiz-row:hover {
     background: rgba(255, 255, 255, 0.06);
     border-color: rgba(108, 99, 255, 0.15);
-    transform: translateX(4px);
 }
 
 .quiz-row-info h3 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     color: #fff;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
 }
 
 .quiz-row-meta {
     display: flex;
-    gap: 14px;
+    gap: 12px;
     align-items: center;
     flex-wrap: wrap;
 }
 
 .row-category {
-    padding: 3px 12px;
+    padding: 2px 10px;
     border-radius: 50px;
     background: rgba(108, 99, 255, 0.12);
     color: #a78bfa;
@@ -420,35 +286,23 @@
     font-size: 13px;
 }
 
-.row-status {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 3px 12px;
-    border-radius: 50px;
-}
-
-.row-status.public {
-    background: rgba(52, 211, 153, 0.12);
-    color: #34d399;
-}
-
-.row-status.private {
-    background: rgba(251, 191, 36, 0.12);
-    color: #fbbf24;
+.row-time {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 13px;
 }
 
 .quiz-row-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     flex-shrink: 0;
 }
 
 .quiz-row-actions button {
-    padding: 8px 18px;
+    padding: 6px 16px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -461,7 +315,6 @@
 
 .edit-btn:hover {
     background: rgba(108, 99, 255, 0.25);
-    transform: scale(1.03);
 }
 
 .delete-btn {
@@ -471,49 +324,22 @@
 
 .delete-btn:hover {
     background: rgba(239, 68, 68, 0.25);
-    transform: scale(1.03);
 }
 
-/* ===== EMPTY STATE ===== */
+/* ===== EMPTY ===== */
 .empty-quizzes {
     text-align: center;
     padding: 60px 20px;
     background: rgba(255, 255, 255, 0.02);
     border: 2px dashed rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-}
-
-.empty-quizzes .empty-icon {
-    font-size: 48px;
-    display: block;
-    margin-bottom: 12px;
-}
-
-.empty-quizzes h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 6px;
-}
-
-.empty-quizzes p {
+    border-radius: 12px;
     color: rgba(255, 255, 255, 0.3);
-    font-size: 15px;
-    margin: 0;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
-    }
-
-    .create-card {
-        order: 2;
-    }
-
-    .quizzes-list {
-        order: 1;
     }
 }
 
@@ -522,7 +348,7 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
-        padding: 20px;
+        padding: 18px;
     }
 
     .profile-info {
@@ -531,13 +357,13 @@
     }
 
     .profile-avatar {
-        width: 56px;
-        height: 56px;
-        font-size: 24px;
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
     }
 
     .profile-details h1 {
-        font-size: 22px;
+        font-size: 20px;
     }
 
     .logout-btn {
@@ -548,7 +374,7 @@
     .quiz-row {
         flex-direction: column;
         align-items: flex-start;
-        gap: 14px;
+        gap: 12px;
     }
 
     .quiz-row-actions {

@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import QuestionCard from "../../components/quiz/QuestionCard";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getQuiz } from "../../services/quiz";
 import { createQuestion, deleteQuestion } from "../../services/question";
-import { getAnswers, createAnswer, deleteAnswer } from "../../services/answer";
+import { getAnswers, createAnswer, updateAnswer, deleteAnswer } from "../../services/answer";
 import "./QuizEditor.css";
 
 function QuizEditor() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [quiz, setQuiz] = useState(null);
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [questionText, setQuestionText] = useState("");
     const [answerText, setAnswerText] = useState("");
     const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -22,11 +23,23 @@ function QuizEditor() {
     }, [id]);
 
     const load = async () => {
-        const quizData = await getQuiz(id);
-        setQuiz(quizData);
-        setQuestions(quizData.questions || []);
-        const answerData = await getAnswers();
-        setAnswers(answerData);
+        try {
+            const quizData = await getQuiz(id);
+            setQuiz(quizData);
+            setQuestions(quizData.questions || []);
+            
+            const answersData = await getAnswers();
+            setAnswers(answersData);
+        } catch (error) {
+            console.error("Ошибка загрузки:", error);
+            navigate("/dashboard");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getQuestionAnswers = (questionId) => {
+        return answers.filter((a) => a.question === questionId);
     };
 
     const addQuestion = async (e) => {
@@ -37,13 +50,11 @@ function QuizEditor() {
             const question = await createQuestion({
                 quiz: id,
                 text: questionText,
-                allow_multiple_answers: false,
-                time_limit: 30,
                 order: questions.length + 1,
             });
             setQuestions([...questions, question]);
             setQuestionText("");
-        } catch {
+        } catch (error) {
             alert("Ошибка создания вопроса");
         } finally {
             setIsAddingQuestion(false);
@@ -52,8 +63,7 @@ function QuizEditor() {
 
     const addAnswer = async (e) => {
         e.preventDefault();
-        if (!selectedQuestion) return;
-        if (!answerText.trim()) return;
+        if (!selectedQuestion || !answerText.trim()) return;
         setIsAddingAnswer(true);
         try {
             const answer = await createAnswer({
@@ -61,57 +71,70 @@ function QuizEditor() {
                 text: answerText,
                 is_correct: false,
             });
-            setAnswers([...answers, answer]);
+            const answerWithQuestion = { ...answer, question: selectedQuestion };
+            setAnswers([...answers, answerWithQuestion]);
             setAnswerText("");
-        } catch {
+        } catch (error) {
             alert("Ошибка создания ответа");
         } finally {
             setIsAddingAnswer(false);
         }
     };
 
+    const toggleCorrect = async (answerId) => {
+        const answer = answers.find(a => a.id === answerId);
+        if (!answer) return;
+        
+        const newValue = !answer.is_correct;
+        
+        // Сначала обновляем локально для быстрого отклика
+        setAnswers(
+            answers.map((a) =>
+                a.id === answerId ? { ...a, is_correct: newValue } : a
+            )
+        );
+        
+        // Отправляем запрос на сервер
+        try {
+            await updateAnswer(answerId, { is_correct: newValue });
+        } catch (error) {
+            // Если ошибка — откатываем
+            setAnswers(
+                answers.map((a) =>
+                    a.id === answerId ? { ...a, is_correct: !newValue } : a
+                )
+            );
+            alert("Ошибка сохранения");
+        }
+    };
+
     const removeQuestion = async (questionId) => {
         if (!window.confirm("Удалить этот вопрос?")) return;
-        await deleteQuestion(questionId);
-        setQuestions(questions.filter((q) => q.id !== questionId));
-        setAnswers(answers.filter((a) => a.question !== questionId));
-        if (selectedQuestion === questionId) {
-            setSelectedQuestion(null);
+        try {
+            await deleteQuestion(questionId);
+            setQuestions(questions.filter((q) => q.id !== questionId));
+            setAnswers(answers.filter((a) => a.question !== questionId));
+            if (selectedQuestion === questionId) setSelectedQuestion(null);
+        } catch {
+            alert("Ошибка удаления");
         }
     };
 
     const removeAnswer = async (answerId) => {
-        if (!window.confirm("Удалить этот вариант ответа?")) return;
-        await deleteAnswer(answerId);
-        setAnswers(answers.filter((a) => a.id !== answerId));
-    };
-
-    const toggleCorrect = async (answerId) => {
-        const answer = answers.find((a) => a.id === answerId);
-        if (!answer) return;
-        // Если у вопроса один правильный ответ, снимаем все остальные
-        const question = questions.find((q) => q.id === answer.question);
-        if (question && !question.allow_multiple_answers) {
-            const questionAnswers = answers.filter((a) => a.question === answer.question);
-            for (const a of questionAnswers) {
-                if (a.id !== answerId && a.is_correct) {
-                    // Здесь нужно обновить через API, но для простоты пока локально
-                }
-            }
+        if (!window.confirm("Удалить этот ответ?")) return;
+        try {
+            await deleteAnswer(answerId);
+            setAnswers(answers.filter((a) => a.id !== answerId));
+        } catch {
+            alert("Ошибка удаления");
         }
-        // Локальное обновление (в реальном проекте нужно через API)
-        setAnswers(
-            answers.map((a) =>
-                a.id === answerId ? { ...a, is_correct: !a.is_correct } : a
-            )
-        );
     };
 
-    if (!quiz) {
+    if (loading) {
         return (
             <div className="editor-loading">
                 <div className="loader"></div>
-                <p>Загрузка квиза...</p>
+                <p>Загрузка...</p>
             </div>
         );
     }
@@ -120,62 +143,87 @@ function QuizEditor() {
         <div className="editor">
             <div className="container">
                 <div className="editor-header">
-                    <div className="editor-header-left">
-                        <Link to="/dashboard" className="back-link">
-                            ← Назад
-                        </Link>
-                        <div>
-                            <h1>{quiz.title}</h1>
-                            <p>{quiz.description || "Без описания"}</p>
-                            <div className="quiz-meta-badges">
-                                <span className="meta-badge category">
-                                    {quiz.category || "Другое"}
-                                </span>
-                                <span className="meta-badge questions-badge">
-                                    {questions.length} вопросов
-                                </span>
-                                <span className={`meta-badge status ${quiz.is_public ? "public" : "private"}`}>
-                                    {quiz.is_public ? "Публичный" : "Приватный"}
-                                </span>
-                            </div>
-                        </div>
+                    <div>
+                        <Link to="/dashboard" className="back-link">← Назад</Link>
+                        <h1>{quiz?.title}</h1>
+                        <p className="editor-desc">{quiz?.description || "Без описания"}</p>
                     </div>
-                    <button className="play-test-btn" onClick={() => alert("Запуск квиза (WebSocket в разработке)")}>
-                        ▶ Запустить
-                    </button>
+                    <div className="editor-stats">
+                        <span>{questions.length} вопросов</span>
+                    </div>
                 </div>
 
                 <div className="editor-grid">
                     <div className="question-list">
                         {questions.length === 0 && (
                             <div className="empty-questions">
-                                <div className="empty-icon">📋</div>
-                                <h3>Нет вопросов</h3>
-                                <p>Добавьте первый вопрос через панель справа</p>
+                                <p>Нет вопросов. Добавьте первый!</p>
                             </div>
                         )}
-                        {questions.map((question) => (
-                            <QuestionCard
-                                key={question.id}
-                                question={question}
-                                answers={answers}
-                                onDeleteQuestion={removeQuestion}
-                                onDeleteAnswer={removeAnswer}
-                                onSelectQuestion={setSelectedQuestion}
-                                onToggleCorrect={toggleCorrect}
-                            />
-                        ))}
+                        {questions.map((question) => {
+                            const questionAnswers = getQuestionAnswers(question.id);
+                            return (
+                                <div className="question-card" key={question.id}>
+                                    <div className="question-header">
+                                        <div>
+                                            <span className="question-order">#{question.order}</span>
+                                            <h3>{question.text}</h3>
+                                        </div>
+                                        <button
+                                            className="delete-question-btn"
+                                            onClick={() => removeQuestion(question.id)}
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+
+                                    <div className="answers-list">
+                                        {questionAnswers.length === 0 && (
+                                            <p className="empty-answers">Нет вариантов ответа</p>
+                                        )}
+                                        {questionAnswers.map((answer) => (
+                                            <div
+                                                className={`answer-item ${answer.is_correct ? "correct" : ""}`}
+                                                key={answer.id}
+                                            >
+                                                <span>{answer.text}</span>
+                                                <div className="answer-actions">
+                                                    <button
+                                                        className={`toggle-correct ${answer.is_correct ? "is-correct" : ""}`}
+                                                        onClick={() => toggleCorrect(answer.id)}
+                                                    >
+                                                        {answer.is_correct ? "✓" : "○"}
+                                                    </button>
+                                                    <button
+                                                        className="delete-answer-btn"
+                                                        onClick={() => removeAnswer(answer.id)}
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                        <button
+                                            className="add-answer-btn"
+                                            onClick={() => setSelectedQuestion(question.id)}
+                                        >
+                                            + Добавить ответ
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     <div className="editor-panel">
                         <div className="panel">
-                            <h2>➕ Новый вопрос</h2>
+                            <h2>Новый вопрос</h2>
                             <form onSubmit={addQuestion}>
                                 <textarea
-                                    placeholder="Введите текст вопроса..."
+                                    placeholder="Текст вопроса..."
                                     value={questionText}
                                     onChange={(e) => setQuestionText(e.target.value)}
-                                    rows="4"
+                                    rows="3"
                                 />
                                 <button type="submit" disabled={isAddingQuestion}>
                                     {isAddingQuestion ? "Добавление..." : "Добавить вопрос"}
@@ -185,13 +233,13 @@ function QuizEditor() {
 
                         {selectedQuestion && (
                             <div className="panel panel-answer">
-                                <h2>✏️ Новый ответ</h2>
+                                <h2>Новый ответ</h2>
                                 <p className="panel-subtitle">
-                                    Для вопроса: {questions.find((q) => q.id === selectedQuestion)?.text?.slice(0, 40)}...
+                                    Для вопроса #{questions.find(q => q.id === selectedQuestion)?.order}
                                 </p>
                                 <form onSubmit={addAnswer}>
                                     <input
-                                        placeholder="Введите вариант ответа..."
+                                        placeholder="Вариант ответа..."
                                         value={answerText}
                                         onChange={(e) => setAnswerText(e.target.value)}
                                     />
@@ -200,7 +248,7 @@ function QuizEditor() {
                                     </button>
                                 </form>
                                 <button
-                                    className="cancel-select"
+                                    className="cancel-btn"
                                     onClick={() => setSelectedQuestion(null)}
                                 >
                                     Отменить
